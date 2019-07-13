@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) XRTK. All rights reserved.
 // Licensed under the MIT License. See LICENSE in https://github.com/XRTK/XRTK-Core/blob/upm/LICENSE.md for license information.
 
 using Microsoft.MixedReality.Toolkit.Oculus;
