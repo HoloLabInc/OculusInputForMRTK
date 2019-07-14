@@ -37,8 +37,8 @@ namespace Microsoft.MixedReality.Toolkit.Oculus.Input
         
         public OculusApi.Node NodeType = OculusApi.Node.None;
         public OculusApi.Controller controllerType = OculusApi.Controller.None;
-        private OculusApi.ControllerState4 currentInputSourceState  = new OculusApi.ControllerState4();
-        private OculusApi.ControllerState4 previousInputSourceState = new OculusApi.ControllerState4();
+        protected OculusApi.ControllerState4 currentInputSourceState  = new OculusApi.ControllerState4();
+        protected OculusApi.ControllerState4 previousInputSourceState = new OculusApi.ControllerState4();
 
         /// <summary>
         /// Update the source data from the provided platform state.
@@ -71,9 +71,6 @@ namespace Microsoft.MixedReality.Toolkit.Oculus.Input
                         break;
                     case DeviceInputType.SpatialGrip:
                         UpdateGripData(Interactions[i]);
-                        break;
-                    case DeviceInputType.Menu:
-                        UpdateMenuData(Interactions[i]);
                         break;
                 }
             }
@@ -258,52 +255,6 @@ namespace Microsoft.MixedReality.Toolkit.Oculus.Input
 
                     if (interactionButton != OculusApi.RawButton.LIndexTrigger ||
                         interactionButton != OculusApi.RawButton.RIndexTrigger) { return; }
-
-                    // Update the interaction data source
-                    if ((((OculusApi.RawButton)currentInputSourceState.Buttons & interactionButton) == 0)
-                    && (((OculusApi.RawButton)previousInputSourceState.Buttons & interactionButton) != 0))
-                    {
-                        interactionMapping.BoolData = false;
-                    }
-
-                    if ((((OculusApi.RawButton)currentInputSourceState.Buttons & interactionButton) != 0)
-                    && (((OculusApi.RawButton)previousInputSourceState.Buttons & interactionButton) == 0))
-                    {
-                        interactionMapping.BoolData = true;
-                    }
-
-                    // If our value changed raise it.
-                    if (interactionMapping.Changed)
-                    {
-                        // Raise input system Event if it enabled
-                        if (interactionMapping.BoolData)
-                        {
-                            InputSystem?.RaiseOnInputDown(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction);
-                        }
-                        else
-                        {
-                            InputSystem?.RaiseOnInputUp(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction);
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Update the Menu button input from the device
-        /// </summary>
-        /// <param name="interactionMapping"></param>
-        private void UpdateMenuData(MixedRealityInteractionMapping interactionMapping)
-        {
-            switch (interactionMapping.InputType)
-            {
-                case DeviceInputType.Menu:
-                {
-                    OculusApi.RawButton interactionButton = OculusApi.RawButton.None;
-                    OculusInteractionMapping.TryParseRawButton(interactionMapping, out interactionButton);
-
-                    if (interactionButton != OculusApi.RawButton.Start) { return; }
 
                     // Update the interaction data source
                     if ((((OculusApi.RawButton)currentInputSourceState.Buttons & interactionButton) == 0)
