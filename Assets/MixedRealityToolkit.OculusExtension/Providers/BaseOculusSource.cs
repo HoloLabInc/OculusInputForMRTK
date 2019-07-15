@@ -223,20 +223,20 @@ namespace Microsoft.MixedReality.Toolkit.Oculus.Input
             switch (interactionMapping.AxisType)
             {
                 case AxisType.SixDof:
+                {
+                    currentGripPose = currentSourcePose;
+
+                    // Update the interaction data source
+                    interactionMapping.PoseData = currentGripPose;
+
+                    // If our value changed raise it.
+                    if (interactionMapping.Changed)
                     {
-                        currentGripPose = currentSourcePose;
-
-                        // Update the interaction data source
-                        interactionMapping.PoseData = currentGripPose;
-
-                        // If our value changed raise it.
-                        if (interactionMapping.Changed)
-                        {
-                            // Raise input system Event if it enabled
-                            InputSystem?.RaisePoseInputChanged(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction, currentGripPose);
-                        }
+                        // Raise input system Event if it enabled
+                        InputSystem?.RaisePoseInputChanged(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction, currentGripPose);
                     }
-                    break;
+                }
+                break;
             }
         }
 
