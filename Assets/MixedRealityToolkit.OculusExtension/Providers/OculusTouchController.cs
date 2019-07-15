@@ -31,15 +31,15 @@ namespace Microsoft.MixedReality.Toolkit.Oculus.Input
             new MixedRealityInteractionMapping(5, "HandTrigger Press", AxisType.SingleAxis, DeviceInputType.Trigger, ControllerMappingLibrary.AXIS_11),
             new MixedRealityInteractionMapping(6, "Thumbstick", AxisType.DualAxis, DeviceInputType.ThumbStick, ControllerMappingLibrary.AXIS_1, ControllerMappingLibrary.AXIS_2),
             new MixedRealityInteractionMapping(7, "Thumbstick Touch", AxisType.Digital, DeviceInputType.ThumbStickTouch, KeyCode.JoystickButton16),
-            new MixedRealityInteractionMapping(8, "Thumbstick Near Touch", AxisType.Digital, DeviceInputType.ThumbNearTouch, ControllerMappingLibrary.AXIS_15),
+            new MixedRealityInteractionMapping(8, "Thumbstick Near Touch", AxisType.Digital, DeviceInputType.ThumbStickNearTouch, ControllerMappingLibrary.AXIS_15),
             new MixedRealityInteractionMapping(9, "Thumbstick Press", AxisType.Digital, DeviceInputType.ThumbStickPress, KeyCode.JoystickButton8),
             new MixedRealityInteractionMapping(10, "X Button Press", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton2),
             new MixedRealityInteractionMapping(11, "Y Button Press", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton3),
-            new MixedRealityInteractionMapping(12, "Start Press", AxisType.Digital, DeviceInputType.Menu, KeyCode.JoystickButton7),
-            new MixedRealityInteractionMapping(13, "X Button Touch", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton12),
-            new MixedRealityInteractionMapping(14, "Y Button Touch", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton13),
-            new MixedRealityInteractionMapping(15, "Touch.PrimaryThumbRest Touch", AxisType.Digital, DeviceInputType.ThumbTouch, KeyCode.JoystickButton18),
-            new MixedRealityInteractionMapping(16, "Touch.PrimaryThumbRest Near Touch", AxisType.Digital, DeviceInputType.ThumbNearTouch, ControllerMappingLibrary.AXIS_17)
+            new MixedRealityInteractionMapping(12, "X Button Touch", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton12),
+            new MixedRealityInteractionMapping(13, "Y Button Touch", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton13),
+            new MixedRealityInteractionMapping(14, "Start Press", AxisType.Digital, DeviceInputType.Menu, KeyCode.JoystickButton7),
+            new MixedRealityInteractionMapping(15, "PrimaryThumbRest Touch", AxisType.Digital, DeviceInputType.ThumbTouch, KeyCode.JoystickButton18),
+            new MixedRealityInteractionMapping(16, "PrimaryThumbRest Near Touch", AxisType.Digital, DeviceInputType.ThumbNearTouch, ControllerMappingLibrary.AXIS_17)
         };
 
         /// <inheritdoc />
@@ -53,14 +53,14 @@ namespace Microsoft.MixedReality.Toolkit.Oculus.Input
             new MixedRealityInteractionMapping(5, "HandTrigger Press", AxisType.SingleAxis, DeviceInputType.Trigger, ControllerMappingLibrary.AXIS_12),
             new MixedRealityInteractionMapping(6, "Thumbstick", AxisType.DualAxis, DeviceInputType.ThumbStick, ControllerMappingLibrary.AXIS_4, ControllerMappingLibrary.AXIS_5),
             new MixedRealityInteractionMapping(7, "Thumbstick Touch", AxisType.Digital, DeviceInputType.ThumbStickTouch, KeyCode.JoystickButton17),
-            new MixedRealityInteractionMapping(8, "Thumbstick Near Touch", AxisType.Digital, DeviceInputType.ThumbNearTouch, ControllerMappingLibrary.AXIS_16),
+            new MixedRealityInteractionMapping(8, "Thumbstick Near Touch", AxisType.Digital, DeviceInputType.ThumbStickNearTouch, ControllerMappingLibrary.AXIS_16),
             new MixedRealityInteractionMapping(9, "Thumbstick Press", AxisType.Digital, DeviceInputType.ThumbStickPress, KeyCode.JoystickButton9),
             new MixedRealityInteractionMapping(10, "A Button Press", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton0),
             new MixedRealityInteractionMapping(11, "B Button Press", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton1),
             new MixedRealityInteractionMapping(12, "X Button Touch", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton10),
             new MixedRealityInteractionMapping(13, "Y Button Touch", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton11),
-            new MixedRealityInteractionMapping(14, "Touch.SecondaryThumbRest Touch", AxisType.Digital, DeviceInputType.ThumbTouch, KeyCode.JoystickButton19),
-            new MixedRealityInteractionMapping(15, "Touch.SecondaryThumbRest Near Touch", AxisType.Digital, DeviceInputType.ThumbNearTouch, ControllerMappingLibrary.AXIS_18)
+            new MixedRealityInteractionMapping(14, "SecondaryThumbRest Touch", AxisType.Digital, DeviceInputType.ThumbTouch, KeyCode.JoystickButton19),
+            new MixedRealityInteractionMapping(15, "SecondaryThumbRest Near Touch", AxisType.Digital, DeviceInputType.ThumbNearTouch, ControllerMappingLibrary.AXIS_18)
         };
 
         #region Update data functions
@@ -80,10 +80,19 @@ namespace Microsoft.MixedReality.Toolkit.Oculus.Input
                 {
                     case DeviceInputType.None:
                         break;
+                    #region ThumbSticks
                     case DeviceInputType.ThumbStick:
-                    case DeviceInputType.ThumbStickPress:
                         UpdateThumbstickData(Interactions[i]);
                         break;
+                    case DeviceInputType.ThumbStickPress:
+                        UpdateThumbstickPressData(Interactions[i]);
+                        break;
+                    case DeviceInputType.ThumbStickTouch:
+                        UpdateThumbStickTouch(Interactions[i]);
+                        break;
+                    case DeviceInputType.ThumbStickNearTouch:
+                        break;
+                    #endregion
                     case DeviceInputType.Menu:
                     case DeviceInputType.ButtonPress:
                         UpdateButtonData(Interactions[i]);
@@ -94,107 +103,71 @@ namespace Microsoft.MixedReality.Toolkit.Oculus.Input
 
         private Vector2 dualAxisPosition = Vector2.zero;
 
+        #region ThumbSticks
         /// <summary>
         /// Update the thumbstick input from the device.
         /// </summary>
         /// <param name="interactionMapping"></param>
         private void UpdateThumbstickData(MixedRealityInteractionMapping interactionMapping)
         {
-            switch (interactionMapping.InputType)
             {
-                case DeviceInputType.ThumbStickPress:
+                OculusApi.RawAxis2D interactionAxis2D = OculusApi.RawAxis2D.None;
+                OculusInteractionMapping.TryParseRawAxis2D(interactionMapping, out interactionAxis2D);
+
+                if (interactionAxis2D != OculusApi.RawAxis2D.None)
+                {
+                    switch (interactionAxis2D)
                     {
-                        OculusApi.RawButton interactionButton = OculusApi.RawButton.None;
-                        OculusInteractionMapping.TryParseRawButton(interactionMapping, out interactionButton);
-
-                        if (interactionButton != OculusApi.RawButton.LThumbstick ||
-                            interactionButton != OculusApi.RawButton.RThumbstick) { return; }
-
-                        // Update the interaction data source
-                        // Update the interaction data source
-                        if ((((OculusApi.RawButton)currentInputSourceState.Buttons & interactionButton) == 0)
-                        && (((OculusApi.RawButton)previousInputSourceState.Buttons & interactionButton) != 0))
-                        {
-                            interactionMapping.BoolData = false;
-                        }
-
-                        if ((((OculusApi.RawButton)currentInputSourceState.Buttons & interactionButton) != 0)
-                        && (((OculusApi.RawButton)previousInputSourceState.Buttons & interactionButton) == 0))
-                        {
-                            interactionMapping.BoolData = true;
-                        }
-
-                        // If our value changed raise it.
-                        if (interactionMapping.Changed)
-                        {
-                            // Raise input system Event if it enabled
-                            if (interactionMapping.BoolData)
-                            {
-                                InputSystem?.RaiseOnInputDown(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction);
-                            }
-                            else
-                            {
-                                InputSystem?.RaiseOnInputUp(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction);
-                            }
-                        }
-                        break;
+                        case OculusApi.RawAxis2D.LThumbstick:
+                            dualAxisPosition.x = currentInputSourceState.LThumbstick.x;
+                            dualAxisPosition.y = currentInputSourceState.LThumbstick.y;
+                            dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
+                            break;
+                        case OculusApi.RawAxis2D.LTouchpad:
+                            dualAxisPosition.x = currentInputSourceState.LTouchpad.x;
+                            dualAxisPosition.y = currentInputSourceState.LTouchpad.y;
+                            dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
+                            break;
+                        case OculusApi.RawAxis2D.RThumbstick:
+                            dualAxisPosition.x = currentInputSourceState.RThumbstick.x;
+                            dualAxisPosition.y = currentInputSourceState.RThumbstick.y;
+                            dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
+                            break;
+                        case OculusApi.RawAxis2D.RTouchpad:
+                            dualAxisPosition.x = currentInputSourceState.RTouchpad.x;
+                            dualAxisPosition.y = currentInputSourceState.RTouchpad.y;
+                            dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
+                            break;
                     }
-                case DeviceInputType.ThumbStick:
-                    {
-                        OculusApi.RawAxis2D interactionAxis2D = OculusApi.RawAxis2D.None;
-                        OculusInteractionMapping.TryParseRawAxis2D(interactionMapping, out interactionAxis2D);
+                }
 
-                        if (interactionAxis2D != OculusApi.RawAxis2D.None)
-                        {
-                            switch (interactionAxis2D)
-                            {
-                                case OculusApi.RawAxis2D.LThumbstick:
-                                    dualAxisPosition.x = currentInputSourceState.LThumbstick.x;
-                                    dualAxisPosition.y = currentInputSourceState.LThumbstick.y;
-                                    dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
-                                    break;
-                                case OculusApi.RawAxis2D.LTouchpad:
-                                    dualAxisPosition.x = currentInputSourceState.LTouchpad.x;
-                                    dualAxisPosition.y = currentInputSourceState.LTouchpad.y;
-                                    dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
-                                    break;
-                                case OculusApi.RawAxis2D.RThumbstick:
-                                    dualAxisPosition.x = currentInputSourceState.RThumbstick.x;
-                                    dualAxisPosition.y = currentInputSourceState.RThumbstick.y;
-                                    dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
-                                    break;
-                                case OculusApi.RawAxis2D.RTouchpad:
-                                    dualAxisPosition.x = currentInputSourceState.RTouchpad.x;
-                                    dualAxisPosition.y = currentInputSourceState.RTouchpad.y;
-                                    dualAxisPosition = OculusApi.CalculateAbsMax(Vector2.zero, dualAxisPosition);
-                                    break;
-                            }
-                        }
-
-                        // Update the interaction data source
-                        interactionMapping.Vector2Data = dualAxisPosition;
-                        if (interactionMapping.Changed)
-                        {
-                            InputSystem?.RaisePositionInputChanged(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction, interactionMapping.Vector2Data);
-                        }
-                        break;
-                    }
+                // Update the interaction data source
+                interactionMapping.Vector2Data = dualAxisPosition;
+                if (interactionMapping.Changed)
+                {
+                    InputSystem?.RaisePositionInputChanged(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction, interactionMapping.Vector2Data);
+                }
             }
+
         }
 
         /// <summary>
-        /// Update the Menu button input from the device
+        /// Update the thumbstick press input from the device.
         /// </summary>
         /// <param name="interactionMapping"></param>
-        private void UpdateButtonData(MixedRealityInteractionMapping interactionMapping)
+        private void UpdateThumbstickPressData(MixedRealityInteractionMapping interactionMapping)
         {
-            if (interactionMapping.InputType == DeviceInputType.ButtonPress)
+            if (interactionMapping.InputType != DeviceInputType.ThumbStickPress)
+                return;
+
             {
                 OculusApi.RawButton interactionButton = OculusApi.RawButton.None;
                 OculusInteractionMapping.TryParseRawButton(interactionMapping, out interactionButton);
 
-                if (interactionButton != OculusApi.RawButton.None) { return; }
+                if (interactionButton != OculusApi.RawButton.LThumbstick ||
+                    interactionButton != OculusApi.RawButton.RThumbstick) { return; }
 
+                // Update the interaction data source
                 // Update the interaction data source
                 if ((((OculusApi.RawButton)currentInputSourceState.Buttons & interactionButton) == 0)
                 && (((OculusApi.RawButton)previousInputSourceState.Buttons & interactionButton) != 0))
@@ -220,6 +193,94 @@ namespace Microsoft.MixedReality.Toolkit.Oculus.Input
                     {
                         InputSystem?.RaiseOnInputUp(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction);
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update the thumbstick touch input from the device.
+        /// </summary>
+        /// <param name="interactionMapping"></param>
+        private void UpdateThumbStickTouch(MixedRealityInteractionMapping interactionMapping)
+        {
+            OculusApi.RawTouch interactionTouch = OculusApi.RawTouch.None;
+            OculusInteractionMapping.TryParseRawTouch(interactionMapping, out interactionTouch);
+
+            if (interactionTouch != OculusApi.RawTouch.LThumbstick ||
+                interactionTouch != OculusApi.RawTouch.RThumbstick) { return; }
+
+            // Update the interaction data source
+            if ((((OculusApi.RawTouch)currentInputSourceState.Touches & interactionTouch) == 0)
+            && (((OculusApi.RawTouch)previousInputSourceState.Touches & interactionTouch) != 0))
+            {
+                interactionMapping.BoolData = false;
+            }
+
+            if ((((OculusApi.RawTouch)currentInputSourceState.Touches & interactionTouch) != 0)
+            && (((OculusApi.RawTouch)previousInputSourceState.Touches & interactionTouch) == 0))
+            {
+                interactionMapping.BoolData = true;
+            }
+
+            // If our value changed raise it.
+            if (interactionMapping.Changed)
+            {
+                // Raise input system Event if it enabled
+                if (interactionMapping.BoolData)
+                {
+                    InputSystem?.RaiseOnInputDown(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction);
+                }
+                else
+                {
+                    InputSystem?.RaiseOnInputUp(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction);
+                }
+            }
+        }
+        
+        private void UpdateThumbStickNearTouch(MixedRealityInteractionMapping interactionMapping)
+        {
+
+        }
+        #endregion
+
+        /// <summary>
+        /// Update the Menu button input from the device
+        /// </summary>
+        /// <param name="interactionMapping"></param>
+        private void UpdateButtonData(MixedRealityInteractionMapping interactionMapping)
+        {
+            if (interactionMapping.InputType != DeviceInputType.ButtonPress)
+                return;
+
+            OculusApi.RawButton interactionButton = OculusApi.RawButton.None;
+            OculusInteractionMapping.TryParseRawButton(interactionMapping, out interactionButton);
+
+            if (interactionButton != OculusApi.RawButton.None) { return; }
+
+            // Update the interaction data source
+            if ((((OculusApi.RawButton)currentInputSourceState.Buttons & interactionButton) == 0)
+            && (((OculusApi.RawButton)previousInputSourceState.Buttons & interactionButton) != 0))
+            {
+                interactionMapping.BoolData = false;
+            }
+
+            if ((((OculusApi.RawButton)currentInputSourceState.Buttons & interactionButton) != 0)
+            && (((OculusApi.RawButton)previousInputSourceState.Buttons & interactionButton) == 0))
+            {
+                interactionMapping.BoolData = true;
+            }
+
+            // If our value changed raise it.
+            if (interactionMapping.Changed)
+            {
+                // Raise input system Event if it enabled
+                if (interactionMapping.BoolData)
+                {
+                    InputSystem?.RaiseOnInputDown(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction);
+                }
+                else
+                {
+                    InputSystem?.RaiseOnInputUp(InputSource, ControllerHandedness, interactionMapping.MixedRealityInputAction);
                 }
             }
         }
